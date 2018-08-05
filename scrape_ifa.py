@@ -27,7 +27,7 @@ class IfaSpider(scrapy.Spider):
         data = response.xpath('/html/body/main/div[2]/div/div[1]/div[2]/div[1]')
         standard = {
                 'name': response.xpath('/html/body/main/div[1]/div/div/h1').css('::text').extract_first().strip(),
-                'url': response.url
+                'ifa_url': response.url
                 }
         for detail in data.css('div.detail'):
             key = detail.css('span.heading::text').extract_first()

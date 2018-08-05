@@ -15,22 +15,26 @@ def output_json_file(*, data, filepath):
         json.dump(data, f)
 
 
-def match_apps(*, ifa, finda):
+def match_apps(file_a, file_b):
     """
     Compares 2 objects containing apprenticeships and matches them on either
     composite key or the url on the IfA site.
 
+    :file_a: python object containing apprenticeship data
+    :file_b: python object containing apprenticeship data
+
     The composite key is created using the using the name and the level number.
-    :ifa: python object containing data from the Institute for Apprenticeships
-    :finda: python object containing data from Find Apprenticeships Training
+    The expected data files are from the Institute for Apprenticeships and
+    Find Apprenticeships Training, but others with a name, level and links to
+    the IfA site should work.
     """
     matches = {}
     match_count = 0
-    for a in ifa:
+    for a in file_a:
         a_key = f"{a['name']}: {a['level'][:1]}".lower()
-        for b in finda:
+        for b in file_b:
             b_key = f"{b['name']}: {b['level'][:1]}".lower()
-            if a_key == b_key or a['url'] == b['ifa_url']:
+            if a_key == b_key or a['ifa_url'] == b['ifa_url']:
                 # we have a match!
                 match_count += 1
                 matches[a_key] = b_key
@@ -46,7 +50,7 @@ if __name__ == '__main__':
     ifa = load_json_file(ifa_file)
     finda = load_json_file(findapp_file)
 
-    match_apps(ifa=ifa, finda=finda)
+    match_apps(ifa, finda)
     try:
         if sys.argv[1] == 'matchonly':
             sys.exit()
