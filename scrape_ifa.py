@@ -19,20 +19,45 @@ class IfaSpider(scrapy.Spider):
 
     def parse_ifa_standard(self, response):
         """
-        Scrape and parse the detail page for each apprenticeship.
+        Scrape and parse the detail page for each apprenticeship standard.
 
         With no ids in the css, divs with the detail class are iterated over to
         produce the keys and the following div is the value.
         """
         data = response.xpath('/html/body/main/div[2]/div/div[1]/div[2]/div[1]')
-        standard = {
-                'name': response.xpath('/html/body/main/div[1]/div/div/h1').css('::text').extract_first().strip(),
-                'ifa_url': response.url
-                }
+
+        standard = {}
         for detail in data.css('div.detail'):
             key = detail.css('span.heading::text').extract_first()
             value = detail.xpath('span[2]').css('::text').extract_first()
-            if key:  # to exclude any nulls
-                standard[key[:-2].lower()] = value.strip()
+            if key:  # to exclude any null keys from empty spans
+                standard[key] = value.strip()
 
-        yield standard
+        max_funding = standard.get('Maximum funding: ')
+        if max_funding:
+            max_funding = int(max_funding[1:])
+
+        employers_involved = standard.get('Employers involved in creating the standard: ')
+        if employers_involved:
+            employers_involved = employers_involved.split(', ')
+
+        level = standard.get('Level: ')
+        if level:
+            level = int(level)
+
+        yield {
+            'name': response.xpath('/html/body/main/div[1]/div/div/h1').css('::text').extract_first().strip(),
+            'ifa_url': response.url,
+            'reference_code': standard.get('Reference: '),
+            'max_funding': max_funding,
+            'employers_involved': employers_involved,
+            'degree_type': standard.get('Degree: '),
+            'approved_date': standard.get('Approved for delivery: '),
+            'level': level,
+            'version': standard.get('Version: '),
+            'contact': standard.get('Trailblazer contact(s): '),
+            'status': standard.get('Status: '),
+            'data_updated': standard.get('Date updated: '),
+            'length': standard.get('Typical duration: '),
+            'route': standard.get('Route: '),
+            }
