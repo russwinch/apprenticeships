@@ -1,4 +1,4 @@
-1) Web scraping
+1  Web scraping
 ===============
 a. All results from https://www.instituteforapprenticeships.org/apprenticeship-standards/ are
 scraped and stored in the file step1a.json.
@@ -18,7 +18,7 @@ TODO:
 - should be combined into file 1 with a function to run both to json files
 ---
 
-2) Matching datasets
+2  Matching datasets
 ====================
 a. The two datasets are iterated over and matched on:
 - a composite key comprised of the lowercase name and the number of the level
