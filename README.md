@@ -29,4 +29,14 @@ a link to the corresponding page on the IfA).
 The url match is the more effective method, with the key matching just picking
 up 1 more apprenticeship.
 
-To run: ```python matching.py matchonly```
+b. Matches from the two datasets are merged. The logic appends data from the second file
+to the first file, with preference to the first file when the same fields exist in both.
+
+To run both parts: ```python matching.py```
+
+Files are saved as ```step2a.json``` and ```step2b.json```
+
+TODO:
+- enforce the same schema for all, rather than a mixture of fields dependent on the original file
+---
+

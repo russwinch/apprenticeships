@@ -34,61 +34,63 @@ def match_apps(file_a, file_b):
     """
     original_b_len = len(file_b)
     matches = {}
-    match_count = 0
+    total_matches = 0
 
     deduped_apprenticeships = []
     file_b_to_remove = []
-    fields_deduped_count = 0
+    total_merged = 0
     for a in file_a:
         a_key = composite_key(a)
         for index, b in enumerate(file_b):
             b_key = composite_key(b)
             if a_key == b_key or a['ifa_url'] == b['ifa_url']:
                 # we have a match!
-                match_count += 1
+                total_matches += 1
                 matches[a_key] = b_key
 
-                a, count = dedupe(a, b)
-                fields_deduped_count += count
+                a, merged_count = merge_dedupe(a, b)
+                total_merged += merged_count
                 file_b_to_remove.append(index)
         deduped_apprenticeships.append(a)
 
+    # remove apprenticeships from file_b that have been merged with file_a
     file_b_to_remove.sort(reverse=True)  # delete from the highest index first
     for b in file_b_to_remove:
         del file_b[b]
 
+    # append the remaining unmatched apprenticeships from file_b
     for b in file_b:
         deduped_apprenticeships.append(b)
 
-    matches['total'] = match_count
+    matches['total'] = total_matches
     output_json_file(data=matches, filepath='step2a.json')
-    output_json_file(data=deduped_apprenticeships, filepath='step2b.json')
-    print(f"Original file a: {len(file_a)} | File b: {original_b_len}")
-    print(f"Total matches: {match_count}")
-    print(f"Total deduped fields: {fields_deduped_count}")
+
+    print(f"Original file a: {len(file_a)} | file b: {original_b_len}")
+    print(f"Total matches: {total_matches}")
     print(f"Deduplicated file: {len(deduped_apprenticeships)}")
+    print(f"Total merged fields: {total_merged}")
+    return deduped_apprenticeships
 
 
-def dedupe(match_a, match_b):
-    deduped_count = 0
-    deduped_item = {}
-    for key, a_value in match_a.items():
-        b_value = match_b.get(key)
-        if b_value and not a_value:
-            deduped_item[key] = b_value
-            deduped_count += 1
-        else:
-            deduped_item[key] = a_value
+def merge_dedupe(match_a, match_b):
+    """
+    Merges two dictionaries.
+
+    :match_a: a dictionary of apprenticeship data
+    :match_b: a dictionary of apprenticeship data
+
+    Preference is given to match_a where there is data in the same field in both
+    files.
+    """
+    merged_field_count = 0
 
     for key, b_value in match_b.items():
         a_value = match_a.get(key)
-        if a_value and not b_value:
-            deduped_item[key] = a_value
-            deduped_count += 1
-        else:
-            deduped_item[key] = b_value
+        if b_value and not a_value:
+            match_a[key] = b_value
+            merged_field_count += 1
 
-    return deduped_item, deduped_count
+    return match_a, merged_field_count
 
 
 if __name__ == '__main__':
@@ -98,12 +100,5 @@ if __name__ == '__main__':
     ifa = load_json_file(ifa_file)
     finda = load_json_file(findapp_file)
 
-    match_apps(ifa, finda)
-    try:
-        if sys.argv[1] == 'matchonly':
-            sys.exit()
-    except IndexError:
-        # no arguments were passed when the script was called so we can ignore
-        pass
-
-    # continue on to the dedupe...
+    deduped = match_apps(ifa, finda)
+    output_json_file(data=deduped, filepath='step2b.json')
