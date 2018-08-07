@@ -32,33 +32,63 @@ def match_apps(file_a, file_b):
     Find Apprenticeships Training, but others with a name, level and links to
     the IfA site should work.
     """
+    original_b_len = len(file_b)
     matches = {}
     match_count = 0
+
+    deduped_apprenticeships = []
+    file_b_to_remove = []
+    fields_deduped_count = 0
     for a in file_a:
         a_key = composite_key(a)
-        for b in file_b:
+        for index, b in enumerate(file_b):
             b_key = composite_key(b)
             if a_key == b_key or a['ifa_url'] == b['ifa_url']:
                 # we have a match!
                 match_count += 1
                 matches[a_key] = b_key
 
+                a, count = dedupe(a, b)
+                fields_deduped_count += count
+                file_b_to_remove.append(index)
+        deduped_apprenticeships.append(a)
+
+    file_b_to_remove.sort(reverse=True)  # delete from the highest index first
+    for b in file_b_to_remove:
+        del file_b[b]
+
+    for b in file_b:
+        deduped_apprenticeships.append(b)
+
     matches['total'] = match_count
     output_json_file(data=matches, filepath='step2a.json')
+    output_json_file(data=deduped_apprenticeships, filepath='step2b.json')
+    print(f"Original file a: {len(file_a)} | File b: {original_b_len}")
     print(f"Total matches: {match_count}")
+    print(f"Total deduped fields: {fields_deduped_count}")
+    print(f"Deduplicated file: {len(deduped_apprenticeships)}")
 
 
-def dedupe():
-    pass
-    # 1. iterate through each field in the match from file a, looking for a match in fileb
-    # 2. if there is a match then compare the fields and keep the longest one
-    #       strings- the longest one
-    #       ints - ??
-    # 3. for fields which are not in filea, copy them across from fileb
-    # 4. flag the record in fileb for deletion (deleting here will mess up the iteration)
-    # 5. run through the list of matches from file b and delete them all
-    # 6. copy all remaining items from file b into file a
-    # 7. output to json
+def dedupe(match_a, match_b):
+    deduped_count = 0
+    deduped_item = {}
+    for key, a_value in match_a.items():
+        b_value = match_b.get(key)
+        if b_value and not a_value:
+            deduped_item[key] = b_value
+            deduped_count += 1
+        else:
+            deduped_item[key] = a_value
+
+    for key, b_value in match_b.items():
+        a_value = match_a.get(key)
+        if a_value and not b_value:
+            deduped_item[key] = a_value
+            deduped_count += 1
+        else:
+            deduped_item[key] = b_value
+
+    return deduped_item, deduped_count
 
 
 if __name__ == '__main__':
