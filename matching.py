@@ -9,10 +9,15 @@ def load_json_file(filepath):
     return apprenticeship_dict
 
 
-def output_json_file(*, data, filepath):
+def output_json_file(data, filepath):
     """Converts a python object to json and writes the file."""
     with open(filepath, mode='w') as f:
         json.dump(data, f)
+
+
+def composite_key(data):
+    """Creates a composite key from the name and level."""
+    return f"{data['name']}: {data['level']}".lower()
 
 
 def match_apps(file_a, file_b):
@@ -23,7 +28,6 @@ def match_apps(file_a, file_b):
     :file_a: python object containing apprenticeship data
     :file_b: python object containing apprenticeship data
 
-    The composite key is created using the using the name and the level number.
     The expected data files are from the Institute for Apprenticeships and
     Find Apprenticeships Training, but others with a name, level and links to
     the IfA site should work.
@@ -31,17 +35,30 @@ def match_apps(file_a, file_b):
     matches = {}
     match_count = 0
     for a in file_a:
-        # add create_key function
-        a_key = f"{a['name']}: {a['level']}".lower()
+        a_key = composite_key(a)
         for b in file_b:
-            b_key = f"{b['name']}: {b['level']}".lower()
+            b_key = composite_key(b)
             if a_key == b_key or a['ifa_url'] == b['ifa_url']:
                 # we have a match!
                 match_count += 1
                 matches[a_key] = b_key
+
     matches['total'] = match_count
     output_json_file(data=matches, filepath='step2a.json')
     print(f"Total matches: {match_count}")
+
+
+def dedupe():
+    pass
+    # 1. iterate through each field in the match from file a, looking for a match in fileb
+    # 2. if there is a match then compare the fields and keep the longest one
+    #       strings- the longest one
+    #       ints - ??
+    # 3. for fields which are not in filea, copy them across from fileb
+    # 4. flag the record in fileb for deletion (deleting here will mess up the iteration)
+    # 5. run through the list of matches from file b and delete them all
+    # 6. copy all remaining items from file b into file a
+    # 7. output to json
 
 
 if __name__ == '__main__':
