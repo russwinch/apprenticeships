@@ -15,6 +15,7 @@ are scraped and stored in the file ```step1b.json```
 To run: ```scrapy runspider scrape_finda.py -o step1b.json```
 
 TODO:
+- fix 'show more' in long lists of suitable_job_roles and qualifications
 - should be combined into file 1 with a function to run both to json files
 ---
 

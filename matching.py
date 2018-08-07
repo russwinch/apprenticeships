@@ -31,9 +31,10 @@ def match_apps(file_a, file_b):
     matches = {}
     match_count = 0
     for a in file_a:
-        a_key = f"{a['name']}: {a['level'][:1]}".lower()
+        # add create_key function
+        a_key = f"{a['name']}: {a['level']}".lower()
         for b in file_b:
-            b_key = f"{b['name']}: {b['level'][:1]}".lower()
+            b_key = f"{b['name']}: {b['level']}".lower()
             if a_key == b_key or a['ifa_url'] == b['ifa_url']:
                 # we have a match!
                 match_count += 1
