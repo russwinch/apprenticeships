@@ -86,7 +86,9 @@ def merge_dedupe(match_a, match_b):
 
     for key, b_value in match_b.items():
         a_value = match_a.get(key)
-        if b_value and not a_value:
+        if key == 'source':
+            match_a['source'].extend(b_value)  # show the record has been merged
+        elif b_value and not a_value:
             match_a[key] = b_value
             merged_field_count += 1
 

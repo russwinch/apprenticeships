@@ -47,6 +47,7 @@ class IfaSpider(scrapy.Spider):
 
         yield {
             'name': response.xpath('/html/body/main/div[1]/div/div/h1').css('::text').extract_first().strip(),
+            'source': ['Institute for Apprenticeships'],
             'ifa_url': response.url,
             'reference_code': standard.get('Reference: '),
             'max_funding': max_funding,

@@ -82,6 +82,7 @@ class FindAppSpider(scrapy.Spider):
         standard['level'] = level
 
         standard['name'] = response.css('h1.heading-xlarge::text').extract_first().strip()
+        standard['source'] = ['Find Apprenticeship Training']
         standard['length'] = data.css('dd#length::text').extract_first()
         standard['entry_requirements'] = clean_extract(data.css('dd#entry_requirements *::text'), slice(1, None))
         standard['suitable_job_roles'] = clean_extract(data.css('dd.job-roles *::text'), slice(-1), return_list=True)

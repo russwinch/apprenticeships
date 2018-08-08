@@ -12,7 +12,7 @@ To run: ```scrapy runspider scrape_ifa.py -o step1a.json```
 b. All results from https://findapprenticeshiptraining.sfa.bis.gov.uk/Apprenticeship/SearchResults?Keywords=
 are scraped and stored in the file ```step1b.json```
 
-To run: ```scrapy runspider scrape_finda.py -o step1b.json```
+To run: ```scrapy runspider scrape_findapp.py -o step1b.json```
 
 TODO:
 - fix 'show more' in long lists of suitable_job_roles and qualifications
