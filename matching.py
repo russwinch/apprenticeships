@@ -20,7 +20,7 @@ def composite_key(data):
     return f"{data['name']}: {data['level']}".lower()
 
 
-def match_apps(file_a, file_b):
+def match_apps(file_a, file_b, schema=None):
     """
     Compares 2 objects containing apprenticeships and matches them on either
     composite key or the url on the IfA site.
@@ -51,15 +51,17 @@ def match_apps(file_a, file_b):
                 a, merged_count = merge_dedupe(a, b)
                 total_merged += merged_count
                 file_b_to_remove.append(index)
+        a = enforce_schema(a, schema)
         deduped_apprenticeships.append(a)
 
-    # remove apprenticeships from file_b that have been merged with file_a
+    # remove apprenticeships from file_b that have already been merged
     file_b_to_remove.sort(reverse=True)  # delete from the highest index first
     for b in file_b_to_remove:
         del file_b[b]
 
     # append the remaining unmatched apprenticeships from file_b
     for b in file_b:
+        b = enforce_schema(b, schema)
         deduped_apprenticeships.append(b)
 
     matches['total'] = total_matches
@@ -69,12 +71,13 @@ def match_apps(file_a, file_b):
     print(f"Total matches: {total_matches}")
     print(f"Deduplicated file: {len(deduped_apprenticeships)}")
     print(f"Total merged fields: {total_merged}")
+
     return deduped_apprenticeships
 
 
 def merge_dedupe(match_a, match_b):
     """
-    Merges two dictionaries.
+    Merges two dictionaries and returns the matched dict and the count of merged fields.
 
     :match_a: a dictionary of apprenticeship data
     :match_b: a dictionary of apprenticeship data
@@ -88,11 +91,42 @@ def merge_dedupe(match_a, match_b):
         a_value = match_a.get(key)
         if key == 'source':
             match_a['source'].extend(b_value)  # show the record has been merged
-        elif b_value and not a_value:
+        elif b_value and not a_value:  # TODO: when b_value is null this line causes the column to be lost
             match_a[key] = b_value
             merged_field_count += 1
 
     return match_a, merged_field_count
+
+
+def enforce_schema(fields, schema):
+    """
+    Check all records in a file against a schema and add any missing items.
+
+    :fields: object of apprenticeships. Likely to be deduped
+    :schema: dictionary of all required fields
+    """
+    for s in schema:
+        if fields.get(s, 'missing_field') == 'missing_field':
+            fields[s] = None
+
+    return fields
+
+
+def create_schema(app_file):
+    """
+    Extract columns from a file and deduplicate by using a set.
+
+    Useful if the incoming data is not clean and there are discrepancies in columns.
+    ***In this scenario it could just be run on the first record, but running against
+    all just to be sure and for application against other datasets.***
+    """
+
+    columns = set()
+    for app in app_file:
+        for column in app.keys():
+            columns.add(column)
+
+    return columns
 
 
 if __name__ == '__main__':
@@ -102,5 +136,9 @@ if __name__ == '__main__':
     ifa = load_json_file(ifa_file)
     finda = load_json_file(findapp_file)
 
-    deduped = match_apps(ifa, finda)
+    ifa_schema = create_schema(ifa)
+    finda_schema = create_schema(finda)
+    combined_schema = ifa_schema.union(finda_schema)
+
+    deduped = match_apps(ifa, finda, schema=combined_schema)
     output_json_file(data=deduped, filepath='step2b.json')
