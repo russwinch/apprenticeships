@@ -51,7 +51,7 @@ def match_apps(file_a, file_b, schema=None):
                 a, merged_count = merge_dedupe(a, b)
                 total_merged += merged_count
                 file_b_to_remove.append(index)
-        a = enforce_schema(a, schema)
+        a = schema.enforce(a)
         deduped_apprenticeships.append(a)
 
     # remove apprenticeships from file_b that have already been merged
@@ -61,7 +61,7 @@ def match_apps(file_a, file_b, schema=None):
 
     # append the remaining unmatched apprenticeships from file_b
     for b in file_b:
-        b = enforce_schema(b, schema)
+        b = schema.enforce(b)
         deduped_apprenticeships.append(b)
 
     matches['total'] = total_matches
@@ -98,35 +98,42 @@ def merge_dedupe(match_a, match_b):
     return match_a, merged_field_count
 
 
-def enforce_schema(fields, schema):
-    """
-    Check all records in a file against a schema and add any missing items.
+class Schema(object):
+    """Holds and enforces the expected columns in the dataset."""
+    def __init__(self):
+        """Create an empty schema."""
+        self.schema = set()
 
-    :fields: object of apprenticeships. Likely to be deduped
-    :schema: dictionary of all required fields
-    """
-    for s in schema:
-        if fields.get(s, 'missing_field') == 'missing_field':
-            fields[s] = None
+    def append(self, apps):
+        """
+        Extract columns from a file and deduplicate by using a set.
 
-    return fields
+        :apps: python object containing apprenticeships
 
+        Useful if the incoming data is not clean and there are discrepancies in columns.
+        ***In this scenario it could just be run on the first record, but running against
+        all just to be sure and for application against other datasets.***
+        """
 
-def create_schema(app_file):
-    """
-    Extract columns from a file and deduplicate by using a set.
+        columns = set()
+        for app in apps:
+            for column in app.keys():
+                columns.add(column)
 
-    Useful if the incoming data is not clean and there are discrepancies in columns.
-    ***In this scenario it could just be run on the first record, but running against
-    all just to be sure and for application against other datasets.***
-    """
+        self.schema = self.schema.union(columns)
 
-    columns = set()
-    for app in app_file:
-        for column in app.keys():
-            columns.add(column)
+    def enforce(self, fields):
+        """
+        Check all records in a file against a schema and add any missing items.
 
-    return columns
+        :fields: object of apprenticeships.
+        """
+        for s in self.schema:
+            try:
+                fields[s]
+            except KeyError:
+                fields[s] = None
+        return fields
 
 
 if __name__ == '__main__':
@@ -136,9 +143,9 @@ if __name__ == '__main__':
     ifa = load_json_file(ifa_file)
     finda = load_json_file(findapp_file)
 
-    ifa_schema = create_schema(ifa)
-    finda_schema = create_schema(finda)
-    combined_schema = ifa_schema.union(finda_schema)
+    schema = Schema()
+    schema.append(ifa)
+    schema.append(finda)
 
-    deduped = match_apps(ifa, finda, schema=combined_schema)
+    deduped = match_apps(ifa, finda, schema=schema)
     output_json_file(data=deduped, filepath='step2b.json')

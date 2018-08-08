@@ -51,9 +51,6 @@ showing the shape of the data and where there are missing values.
 
 Additional
 ===
-```helpers.py``` contains any functions that were useful but didn't need to be
-integrated.
-
 Some unit tests have been written and can be found in ```/tests```.
 Coverage is not complete.
 
