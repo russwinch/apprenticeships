@@ -37,6 +37,7 @@ To run both parts: ```python matching.py```
 Files are saved as ```step2a.json``` and ```step2b.json```
 
 TODO:
+- include a column to show the source dataset
 - enforce the same schema for all, rather than a mixture of fields dependent on the original file
 ---
 
