@@ -23,11 +23,11 @@ TODO:
 ===
 a. The two datasets are iterated over and matched on:
 - a composite key comprised of the lowercase name and the number of the level
-- the url on the Institiue for Apprenticeships site (some pages on the Find Apprenticeship Training site have
-a link to the corresponding page on the IfA).
+- the url on the Institiue for Apprenticeships site (some pages on the Find Apprenticeship
+Training site have a link to the corresponding page on the IfA).
 
 The url match is the more effective method, with the key matching just picking
-up 1 more apprenticeship.
+up 1 additional apprenticeship.
 
 b. Matches from the two datasets are merged. The logic appends data from the second file
 to the first file, with preference to the first file when the same fields exist in both.
@@ -36,22 +36,19 @@ To run both parts: ```python matching.py```
 
 Files are saved as ```step2a.json``` and ```step2b.json```
 
-TODO:
-- enforce the same schema for all, rather than a mixture of fields dependent on the original file
 ---
 
 3 - Summarise data
 ===
 A summary of the dataset is available in the Jupyter notebook ```summarise.ipynb```
 
-This covers the overall picture of the data and then highlights some key fields,
+This covers the overall picture of the data and highlights some key fields,
 showing the shape of the data and where there are missing values.
 
 ---
 
 Additional
 ===
-Some unit tests have been written and can be found in ```/tests```.
-Coverage is not complete.
+Some unit tests have been written for step2 and can be found in ```/tests``` but coverage is not complete.
 
-Tests can be run with ```pytest``` from the root folder.
+Tests can be run with ```pytest``` from the root folder of the project.

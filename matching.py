@@ -3,7 +3,7 @@ import sys
 
 
 def load_json_file(filepath):
-    """Opens a json file and converts it to python object."""
+    """Opens a json file and converts it to a python object."""
     with open(filepath, mode='r') as f:
         apprenticeship_dict = json.load(f)
     return apprenticeship_dict
@@ -25,8 +25,8 @@ def match_apps(file_a, file_b, schema=None):
     Compares 2 objects containing apprenticeships and matches them on either
     composite key or the url on the IfA site.
 
-    :file_a: python object containing apprenticeship data
-    :file_b: python object containing apprenticeship data
+    :file_a: object containing apprenticeship data
+    :file_b: object containing apprenticeship data
 
     The expected data files are from the Institute for Apprenticeships and
     Find Apprenticeships Training, but others with a name, level and links to
@@ -79,8 +79,8 @@ def merge_dedupe(match_a, match_b):
     """
     Merges two dictionaries and returns the matched dict and the count of merged fields.
 
-    :match_a: a dictionary of apprenticeship data
-    :match_b: a dictionary of apprenticeship data
+    :match_a: a dictionary containing a single apprenticeship
+    :match_b: a dictionary containing a single apprenticeship
 
     Preference is given to match_a where there is data in the same field in both
     files.
@@ -99,10 +99,16 @@ def merge_dedupe(match_a, match_b):
 
 
 class Schema(object):
-    """Holds and enforces the expected columns in the dataset."""
-    def __init__(self):
-        """Create an empty schema."""
+    """Holds and enforces the expected fields in the dataset."""
+    def __init__(self, apps=None):
+        """
+        Create an empty schema.
+
+        :apps: python object containing apprenticeships
+        """
         self.schema = set()
+        if apps:
+            self.append(apps)
 
     def append(self, apps):
         """
@@ -115,18 +121,18 @@ class Schema(object):
         all just to be sure and for application against other datasets.***
         """
 
-        columns = set()
+        fields = set()
         for app in apps:
-            for column in app.keys():
-                columns.add(column)
+            for field in app.keys():
+                fields.add(field)
 
-        self.schema = self.schema.union(columns)
+        self.schema = self.schema.union(fields)
 
     def enforce(self, fields):
         """
-        Check all records in a file against a schema and add any missing items.
+        Check all fields in a record against a schema and add any missing items.
 
-        :fields: object of apprenticeships.
+        :fields: object of apprenticeships
         """
         for s in self.schema:
             try:
@@ -143,8 +149,7 @@ if __name__ == '__main__':
     ifa = load_json_file(ifa_file)
     finda = load_json_file(findapp_file)
 
-    schema = Schema()
-    schema.append(ifa)
+    schema = Schema(ifa)
     schema.append(finda)
 
     deduped = match_apps(ifa, finda, schema=schema)
