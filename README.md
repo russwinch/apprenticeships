@@ -27,7 +27,8 @@ a. The two datasets are iterated over and matched on:
 Training site have a link to the corresponding page on the IfA).
 
 The url match is the more effective method, with the key matching just picking
-up 1 additional apprenticeship.
+up 1 additional apprenticeship. There were less matches than expected, it is advisable
+to look into this further in case further data cleaning could yield more matches.
 
 b. Matches from the two datasets are merged. The logic appends data from the second file
 to the first file, with preference to the first file when the same fields exist in both.

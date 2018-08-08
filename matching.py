@@ -23,7 +23,7 @@ def composite_key(data):
 def match_apps(file_a, file_b, schema=None):
     """
     Compares 2 objects containing apprenticeships and matches them on either
-    composite key or the url on the IfA site.
+    composite key or the IfA website url.
 
     :file_a: object containing apprenticeship data
     :file_b: object containing apprenticeship data
