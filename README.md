@@ -1,5 +1,5 @@
 1 - Web scraping
-===============
+===
 a. All results from https://www.instituteforapprenticeships.org/apprenticeship-standards/ are
 scraped and stored in the file step1a.json.
 
@@ -20,7 +20,7 @@ TODO:
 ---
 
 2 - Matching datasets
-====================
+===
 a. The two datasets are iterated over and matched on:
 - a composite key comprised of the lowercase name and the number of the level
 - the url on the Institiue for Apprenticeships site (some pages on the Find Apprenticeship Training site have
@@ -41,8 +41,20 @@ TODO:
 ---
 
 3 - Summarise data
-====================
+===
 A summary of the dataset is available in the Jupyter notebook ```summarise.ipynb```
 
 This covers the overall picture of the data and then highlights some key fields,
 showing the shape of the data and where there are missing values.
+
+---
+
+Additional
+===
+```helpers.py``` contains any functions that were useful but didn't need to be
+integrated.
+
+Some unit tests have been written and can be found in ```/tests```.
+Coverage is not complete.
+
+Tests can be run with ```pytest``` from the root folder.

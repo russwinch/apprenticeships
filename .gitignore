@@ -2,3 +2,4 @@ __pycache__
 venv
 *.swp
 .ipynb_checkpoints
+.pytest_cache

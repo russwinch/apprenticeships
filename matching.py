@@ -10,13 +10,13 @@ def load_json_file(filepath):
 
 
 def output_json_file(data, filepath):
-    """Converts a python object to json and writes the file."""
+    """Converts a python object to json and writes to the filepath."""
     with open(filepath, mode='w') as f:
         json.dump(data, f)
 
 
 def composite_key(data):
-    """Creates a composite key from the name and level."""
+    """Creates a composite key from the name and level of a supplied dictionary."""
     return f"{data['name']}: {data['level']}".lower()
 
 
