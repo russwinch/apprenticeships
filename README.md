@@ -1,4 +1,4 @@
-1  Web scraping
+1 - Web scraping
 ===============
 a. All results from https://www.instituteforapprenticeships.org/apprenticeship-standards/ are
 scraped and stored in the file step1a.json.
@@ -19,7 +19,7 @@ TODO:
 - should be combined into file 1 with a function to run both to json files
 ---
 
-2  Matching datasets
+2 - Matching datasets
 ====================
 a. The two datasets are iterated over and matched on:
 - a composite key comprised of the lowercase name and the number of the level
@@ -37,7 +37,12 @@ To run both parts: ```python matching.py```
 Files are saved as ```step2a.json``` and ```step2b.json```
 
 TODO:
-- include a column to show the source dataset
 - enforce the same schema for all, rather than a mixture of fields dependent on the original file
 ---
 
+3 - Summarise data
+====================
+A summary of the dataset is available in the Jupyter notebook ```summarise.ipynb```
+
+This covers the overall picture of the data and then highlights some key fields,
+showing the shape of the data and where there are missing values.
