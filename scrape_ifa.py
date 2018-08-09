@@ -58,7 +58,7 @@ class IfaSpider(scrapy.Spider):
             'version': standard.get('Version: '),
             'contact': standard.get('Trailblazer contact(s): '),
             'status': standard.get('Status: '),
-            'data_updated': standard.get('Date updated: '),
+            'date_updated': standard.get('Date updated: '),
             'length': standard.get('Typical duration: '),
             'route': standard.get('Route: '),
             }
